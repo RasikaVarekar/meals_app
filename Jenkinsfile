@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        FLUTTER_HOME = "/home/ubuntu/flutter"
+        FLUTTER_HOME = "/jenkins-agent/flutter"
         PATH = "${env.PATH}:${FLUTTER_HOME}/bin"
     }
 
