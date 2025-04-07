@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        PATH = "${PATH}:/home/rasika-varekar/flutter/bin"
+        PATH = "${PATH}:"/jenkins-agent/flutter/bin"
     }
 
     stages {
