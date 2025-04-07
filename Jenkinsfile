@@ -2,11 +2,12 @@ pipeline {
     agent any
 
     environment {
-        PATH = "${PATH}:${HOME}/jenkins-agent/flutter/bin"
+        FLUTTER_HOME = "/home/ubuntu/flutter"
+        PATH = "${env.PATH}:${FLUTTER_HOME}/bin"
     }
 
     stages {
-        stage('Clone repository') {
+        stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/RasikaVarekar/meals_app.git'
             }
@@ -38,14 +39,11 @@ pipeline {
     }
 
     post {
-        always {
-            echo 'Cleaning up...'
-        }
         success {
-            echo 'Build and test successful!'
+            echo '✅ Build and tests successful!'
         }
         failure {
-            echo 'Build failed!'
+            echo '❌ Build failed!'
         }
     }
 }
