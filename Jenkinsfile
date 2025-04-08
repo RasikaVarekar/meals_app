@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         FLUTTER_HOME = "/jenkins-agent/flutter"
+        JAVA_HOME = "/home/rasika-varekar/jdk-17.0.12_linux-x64_bin/jdk-17.0.12"
         ANDROID_SDK_ROOT = "/jenkins-agent/android-sdk"
         PATH = "${FLUTTER_HOME}/bin:${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin:${env.PATH}"
         MY_ENV_VAR = "Custom Value for Flutter Build"
