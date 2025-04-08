@@ -26,9 +26,7 @@ pipeline {
                 }
             }
         }
-    }
 
-    stages {
         stage('Flutter Clean') {
             steps {
                 sh '''
@@ -65,6 +63,7 @@ pipeline {
             }
         }
 
+        // Uncomment this section if needed
         // stage('Build APK') {
         //     steps {
         //         sh '''
@@ -74,7 +73,7 @@ pipeline {
         //     }
         // }
 
-        // Optional: Uncomment to validate APK output
+        // Optional APK output validation
         // stage('Check APK Output') {
         //     steps {
         //         sh '''
