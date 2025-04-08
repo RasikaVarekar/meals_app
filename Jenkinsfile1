@@ -34,10 +34,11 @@ stage('Check Git Version') {
 
         stage('Flutter Clean') {
             steps {
-                bat '''
-                    echo ✅ Running flutter clean...
-                    flutter clean || (echo ❌ Flutter clean failed! && exit 1)
-                '''
+               bat """ 
+    echo ✅ Running flutter clean...
+    flutter clean || (echo ❌ Flutter clean failed! && exit 1)
+"""
+
             }
         }
 
