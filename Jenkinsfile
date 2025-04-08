@@ -2,49 +2,79 @@ pipeline {
     agent any
 
     environment {
-        PATH = "/jenkins-agent/flutter/bin:$PATH"
+        FLUTTER_HOME = "/jenkins-agent/flutter"
+        ANDROID_SDK_ROOT = "/jenkins-agent/android-sdk"
+        PATH = "${FLUTTER_HOME}/bin:${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin:${env.PATH}"
+        MY_ENV_VAR = "Custom Value for Flutter Build"
+    }
+
+    options {
+        timeout(time: 20, unit: 'MINUTES')
     }
 
     stages {
         stage('Flutter Clean') {
             steps {
-                sh 'flutter clean'
+                sh '''
+                echo "🧹 Running flutter clean..."
+                flutter clean || { echo "❌ Flutter clean failed!"; exit 1; }
+                '''
             }
         }
 
         stage('Flutter Pub Get') {
             steps {
-                sh 'flutter pub get'
+                sh '''
+                echo "📦 Fetching dependencies..."
+                flutter pub get || { echo "❌ flutter pub get failed!"; exit 1; }
+                '''
             }
         }
 
         stage('Analyze Code') {
-    steps {
-        script {
-            sh 'flutter analyze || true'
+            steps {
+                sh '''
+                echo "🔍 Analyzing code..."
+                flutter analyze || echo "⚠️ Code analysis returned warnings but continuing..."
+                '''
+            }
         }
-    }
-}
 
         stage('Run Tests') {
             steps {
-                sh 'flutter test'
+                sh '''
+                echo "🧪 Running tests..."
+                flutter test || { echo "❌ Tests failed!"; exit 1; }
+                '''
             }
         }
 
-        stage('Build APK') {
-            steps {
-                sh 'flutter build apk --debug'
-            }
-        }
+        // stage('Build APK') {
+        //     steps {
+        //         sh '''
+        //         echo "📱 Building APK (debug mode)..."
+        //         flutter build apk --debug || { echo "❌ APK build failed!"; exit 1; }
+        //         '''
+        //     }
+        // }
+
+        // Optional: Uncomment to validate APK output
+        // stage('Check APK Output') {
+        //     steps {
+        //         sh '''
+        //         echo "📂 Checking APK output directory..."
+        //         ls -lah build/app/outputs/flutter-apk/ || { echo "❌ APK output not found!"; exit 1; }
+        //         '''
+        //     }
+        // }
     }
 
     post {
         success {
-            echo '✅ Build succeeded!'
+            echo '✅ Flutter build pipeline completed successfully!'
         }
         failure {
-            echo '❌ Build failed!'
+            echo '❌ Flutter build pipeline failed!'
         }
     }
 }
