@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         FLUTTER_HOME = "/jenkins-agent/flutter"
-        PATH += ":${FLUTTER_HOME}/bin"
+        PATH = "${env.PATH}:${FLUTTER_HOME}/bin"
     }
 
     stages {
