@@ -14,6 +14,20 @@ pipeline {
     }
 
     stages {
+        stage('Checkout') {
+            steps {
+                script {
+                    def gitRepoUrl = 'https://github.com/RasikaVarekar/meals_app.git'
+                    checkout([$class: 'GitSCM', 
+                        branches: [[name: '*/main']],
+                        userRemoteConfigs: [[url: gitRepoUrl]],
+                        extensions: [[$class: 'CleanBeforeCheckout']]
+                    ])
+                }
+            }
+        }
+
+    stages {
         stage('Flutter Clean') {
             steps {
                 sh '''
