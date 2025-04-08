@@ -5,7 +5,6 @@ pipeline {
     FLUTTER_HOME = 'C:/flutter_windows_3.24.4-stable/flutter'
     GIT_HOME = 'C:/Program Files/Git/bin'
     ANDROID_SDK_ROOT = 'C:/Users/Admin/AppData/Local/Android/Sdk'
-    PATH = "${GIT_HOME};${FLUTTER_HOME}/bin;${env.PATH}"
 }
 
 
