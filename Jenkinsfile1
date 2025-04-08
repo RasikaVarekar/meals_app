@@ -16,8 +16,13 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                script {
-                    checkout scm
+                sscript {
+                    def gitRepoUrl = 'https://github.com/RasikaVarekar/meals_app.git'
+                    checkout([$class: 'GitSCM', 
+                        branches: [[name: '*/main']],
+                        userRemoteConfigs: [[url: gitRepoUrl]],
+                        extensions: [[$class: 'CleanBeforeCheckout']]
+                    ])
                 }
             }
         }
