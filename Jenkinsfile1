@@ -1,0 +1,95 @@
+pipeline {
+    agent any
+
+    environment {
+        FLUTTER_HOME = "C:\flutter_windows_3.24.4-stable\flutter\bin"
+        JAVA_HOME = "C:\Program Files\Java\jdk-17\bin"
+    //     ANDROID_SDK_ROOT = "C:\\jenkins-agent\\android-sdk"
+    //     PATH = "${FLUTTER_HOME}\\bin;${ANDROID_SDK_ROOT}\\cmdline-tools\\latest\\bin;${env.PATH}"
+    //     MY_ENV_VAR = "Custom Value for Flutter Build"
+    // }
+    }
+
+    options {
+        timeout(time: 20, unit: 'MINUTES')
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                script {
+                    def gitRepoUrl = 'https://github.com/RasikaVarekar/meals_app.git'
+                    checkout([$class: 'GitSCM', 
+                        branches: [[name: '*/main']],
+                        userRemoteConfigs: [[url: gitRepoUrl]],
+                        extensions: [[$class: 'CleanBeforeCheckout']]
+                    ])
+                }
+            }
+        }
+
+        stage('Flutter Clean') {
+            steps {
+                bat '''
+                echo 🧹 Running flutter clean...
+                flutter clean || (echo ❌ Flutter clean failed! && exit 1)
+                '''
+            }
+        }
+
+        stage('Flutter Pub Get') {
+            steps {
+                bat '''
+                echo 📦 Fetching dependencies...
+                flutter pub get || (echo ❌ flutter pub get failed! && exit 1)
+                '''
+            }
+        }
+
+        stage('Analyze Code') {
+            steps {
+                bat '''
+                echo 🔍 Analyzing code...
+                flutter analyze || echo ⚠️ Code analysis returned warnings but continuing...
+                '''
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                bat '''
+                echo 🧪 Running tests...
+                flutter test || (echo ❌ Tests failed! && exit 1)
+                '''
+            }
+        }
+
+        // Optional APK build on Windows
+        // stage('Build APK') {
+        //     steps {
+        //         bat '''
+        //         echo 📱 Building APK (debug mode)...
+        //         flutter build apk --debug || (echo ❌ APK build failed! && exit 1)
+        //         '''
+        //     }
+        // }
+
+        // stage('Check APK Output') {
+        //     steps {
+        //         bat '''
+        //         echo 📂 Checking APK output directory...
+        //         dir build\\app\\outputs\\flutter-apk || (echo ❌ APK output not found! && exit 1)
+        //         '''
+        //     }
+        // }
+    }
+
+    post {
+        success {
+            echo '✅ Flutter build pipeline completed successfully!'
+        }
+        failure {
+            echo '❌ Flutter build pipeline failed!'
+        }
+    }
+}
