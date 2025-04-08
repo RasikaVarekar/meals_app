@@ -2,26 +2,20 @@ pipeline {
     agent any
 
     environment {
-        FLUTTER_HOME = "/jenkins-agent/flutter"
-        PATH = "${env.PATH}:${FLUTTER_HOME}/bin"
+        PATH = "/home/jenkins/flutter/bin:$PATH"
     }
 
     stages {
-        stage('Checkout') {
+        stage('Flutter Clean') {
             steps {
-                git branch: 'main', url: 'https://github.com/RasikaVarekar/meals_app.git'
+                sh 'flutter clean'
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Flutter Pub Get') {
             steps {
                 sh 'flutter pub get'
             }
-        }
-        stage('Setup Flutter') {
-          steps {
-                sh 'flutter doctor'
-             }
         }
 
         stage('Analyze Code') {
@@ -45,7 +39,7 @@ pipeline {
 
     post {
         success {
-            echo '✅ Build and tests successful!'
+            echo '✅ Build succeeded!'
         }
         failure {
             echo '❌ Build failed!'
