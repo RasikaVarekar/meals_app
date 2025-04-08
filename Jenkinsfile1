@@ -16,7 +16,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                sscript {
+                script {
                     def gitRepoUrl = 'https://github.com/RasikaVarekar/meals_app.git'
                     checkout([$class: 'GitSCM', 
                         branches: [[name: '*/main']],
