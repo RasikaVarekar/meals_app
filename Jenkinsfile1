@@ -21,6 +21,16 @@ pipeline {
                 }
             }
         }
+stage('Check Git Version') {
+    steps {
+        bat '''
+            echo 🔍 Checking git version...
+            where git
+            git --version
+        '''
+    }
+}
+
 
         stage('Flutter Clean') {
             steps {
