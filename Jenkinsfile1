@@ -34,12 +34,7 @@ stage('Check Git Version') {
 
         stage('Flutter Clean') {
             steps {
-               bat """ 
-    echo ✅ Running flutter clean...
-    bat '"C:/flutter_windows_3.24.4-stable/flutter/bin/flutter.bat" clean'
- || (echo ❌ Flutter clean failed! && exit 1)
-"""
-
+               bat 'C:/flutter_windows_3.24.4-stable/flutter/bin/flutter.bat clean'
             }
         }
 
