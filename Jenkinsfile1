@@ -5,7 +5,6 @@ pipeline {
         FLUTTER_HOME = 'C:/flutter_windows_3.24.4-stable/flutter'
         GIT_HOME = 'C:/Program Files/Git/bin'
         ANDROID_SDK_ROOT = 'C:/Users/Admin/AppData/Local/Android/Sdk'
-        PATH = "${FLUTTER_HOME}/bin;${GIT_HOME};${PATH}"
     }
 
     options {
@@ -30,21 +29,24 @@ pipeline {
             steps {
                 bat '''
                     echo 🔍 Checking git version...
-                    where git
-                    git --version
+                    "C:/Program Files/Git/bin/git.exe" --version
                 '''
             }
         }
 
         stage('Flutter Clean') {
             steps {
-                bat 'flutter clean'
+                bat '''
+                    set PATH=C:/flutter_windows_3.24.4-stable/flutter/bin;%PATH%
+                    flutter clean
+                '''
             }
         }
 
         stage('Flutter Pub Get') {
             steps {
                 bat '''
+                    set PATH=C:/flutter_windows_3.24.4-stable/flutter/bin;%PATH%
                     echo ✅ Running flutter pub get...
                     flutter pub get || (echo ❌ flutter pub get failed! && exit 1)
                 '''
@@ -54,6 +56,7 @@ pipeline {
         stage('Analyze Code') {
             steps {
                 bat '''
+                    set PATH=C:/flutter_windows_3.24.4-stable/flutter/bin;%PATH%
                     echo ✅ Analyzing code...
                     flutter analyze || (echo ❌ flutter analyze failed! && exit 1)
                 '''
@@ -63,6 +66,7 @@ pipeline {
         stage('Run Tests') {
             steps {
                 bat '''
+                    set PATH=C:/flutter_windows_3.24.4-stable/flutter/bin;%PATH%
                     echo ✅ Running tests...
                     flutter test || (echo ❌ flutter test failed! && exit 1)
                 '''
