@@ -17,7 +17,7 @@ pipeline {
             steps {
                 bat '''
                     # Directly set Git path first
-                    set PATH=C:\Program Files\Git\cmd;C:\Program Files\Git\bin;%PATH%
+                    set PATH=C:/Program Files/Git/cmd;C:/Program Files/Git/bin;%PATH%
                     
                     # Verify Git is accessible
                     where git
