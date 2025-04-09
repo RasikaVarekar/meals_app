@@ -24,7 +24,7 @@ pipeline {
                     git --version
                     
                     # Configure Flutter to use specific Git executable
-                    flutter config --git-dir="C:\Program Files\Git\cmd\git.exe"
+                    flutter config --git-dir="C:/Program Files/Git/cmd/git.exe"
                 '''
             }
         }
