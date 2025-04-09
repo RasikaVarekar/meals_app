@@ -24,7 +24,7 @@ pipeline {
         stage('Flutter Clean') {
             steps {
                 bat '''
-                    set PATH=C:/Program Files/Git/bin;C:/flutter_windows_3.24.4-stable/flutter/bin;%PATH%
+                    set PATH=C:/flutter_windows_3.24.4-stable/flutter/bin;%PATH%
             flutter clean
                 '''
             }
