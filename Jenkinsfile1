@@ -2,11 +2,17 @@ pipeline {
     agent any
 
     environment {
+        // Use forward slashes for consistency
         FLUTTER_HOME = 'C:/flutter_windows_3.24.4-stable/flutter'
         ANDROID_SDK_ROOT = 'C:/Users/Admin/AppData/Local/Android/Sdk'
         JAVA_HOME = 'C:/Program Files/Java/jdk-17'
-        GIT_HOME = 'C:/Program Files/Git'  // Note: Without /bin here
-        PATH = "${GIT_HOME}/bin;${FLUTTER_HOME}/bin;${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin;${ANDROID_SDK_ROOT}/platform-tools;${JAVA_HOME}/bin;${env.PATH}"
+        
+        // Explicit Git paths
+        GIT_EXEC_PATH = 'C:/Program Files/Git/cmd'  // Windows typically uses cmd\git.exe
+        GIT_HOME = 'C:/Program Files/Git'
+        
+        // PATH construction - note the order matters
+        PATH = "${GIT_HOME}/cmd;${GIT_HOME}/bin;${FLUTTER_HOME}/bin;${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin;${ANDROID_SDK_ROOT}/platform-tools;${JAVA_HOME}/bin;${env.PATH}"
     }
 
     options {
@@ -20,22 +26,26 @@ pipeline {
                     echo %PATH%
                     where git
                     where flutter
+                    set
                 '''
-            }
-        }
-
-        stage('Checkout') {
-            steps {
-                checkout scm
             }
         }
 
         stage('Flutter Version') {
             steps {
                 bat '''
-                    git config --global --add safe.directory "%WORKSPACE%"
+                    # Explicitly set Git path first
+                    set PATH=C:/Program Files/Git/cmd;C:/Program Files/Git/bin;%PATH%
+                    
+                    # Verify Git is accessible
+                    git --version
+                    
+                    # Now try Flutter
                     flutter --version
-                    where git
+                    
+                    # Alternative: Set Flutter's Git path directly
+                    flutter config --git-dir="C:/Program Files/Git/cmd/git.exe"
+                    flutter --version
                 '''
             }
         }
