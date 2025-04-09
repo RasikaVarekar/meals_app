@@ -9,50 +9,48 @@ pipeline {
         PATH = "${FLUTTER_HOME}/bin;${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin;${ANDROID_SDK_ROOT}/platform-tools;${JAVA_HOME}/bin;${env.PATH}"
     }
 
-    stages {
-        stage('Checkout') {
+   stages {
+        stage('Clone Repo') {
             steps {
-                git url: 'https://github.com/RasikaVarekar/meals_app.git', branch: 'main'
+                git branch: 'main', url: 'https://github.com/rasikavarekar/Surakshaa.git'
             }
         }
 
         stage('Flutter Version') {
-    steps {
-        bat 'flutter --version'
-    }
-}
-
+            steps {
+                bat 'flutter --version'
+            }
+        }
 
         stage('Flutter Doctor') {
             steps {
-                bat 'flutter doctor -v'
+                bat 'flutter doctor'
             }
         }
 
-        stage('Accept Android Licenses') {
-            steps {
-                bat '"%ANDROID_SDK_ROOT%\\cmdline-tools\\latest\\bin\\sdkmanager.bat" --licenses < NUL'
-            }
-        }
-
-        stage('Install Dependencies') {
+        stage('Get Dependencies') {
             steps {
                 bat 'flutter pub get'
             }
         }
 
-        stage('Analyze Code') {
-    steps {
-        script {
-            // Run analysis and ignore non-zero exit code to avoid pipeline failure due to warnings
-            def result = bat(script: 'flutter analyze', returnStatus: true)
-            if (result != 0) {
-                echo "Flutter analyze finished with warnings."
+        stage('Accept Licenses') {
+            steps {
+                bat 'flutter doctor --android-licenses'
             }
         }
-    }
-}
 
+        stage('Analyze Code') {
+            steps {
+                script {
+                    // Allow warnings by not failing the build on non-zero exit code
+                    def result = bat(script: 'flutter analyze', returnStatus: true)
+                    if (result != 0) {
+                        echo "Flutter analyze finished with warnings (exit code ${result})."
+                    }
+                }
+            }
+        }
 
         stage('Run Tests') {
             steps {
