@@ -5,8 +5,8 @@ pipeline {
         FLUTTER_HOME = 'C:/flutter_windows_3.24.4-stable/flutter'
         ANDROID_SDK_ROOT = 'C:/Users/Admin/AppData/Local/Android/Sdk'
         JAVA_HOME = 'C:/Program Files/Java/jdk-17'
-        GIT_HOME = 'C:/Program Files/Git/bin'
-        PATH = "${GIT_HOME};${FLUTTER_HOME}/bin;${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin;${ANDROID_SDK_ROOT}/platform-tools;${JAVA_HOME}/bin;${env.PATH}"
+        GIT_HOME = 'C:/Program Files/Git'  // Note: Without /bin here
+        PATH = "${GIT_HOME}/bin;${FLUTTER_HOME}/bin;${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin;${ANDROID_SDK_ROOT}/platform-tools;${JAVA_HOME}/bin;${env.PATH}"
     }
 
     options {
@@ -14,25 +14,19 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
+        stage('Verify Environment') {
             steps {
-                script {
-                    def gitRepoUrl = 'https://github.com/RasikaVarekar/meals_app.git'
-                    checkout([$class: 'GitSCM', 
-                        branches: [[name: '*/main']],
-                        userRemoteConfigs: [[url: gitRepoUrl]],
-                        extensions: [[$class: 'CleanBeforeCheckout']]
-                    ])
-                }
+                bat '''
+                    echo %PATH%
+                    where git
+                    where flutter
+                '''
             }
         }
 
-        stage('Check Git Version') {
+        stage('Checkout') {
             steps {
-                bat '''
-                    echo 🔍 Checking git version...
-                    git --version
-                '''
+                checkout scm
             }
         }
 
@@ -41,6 +35,7 @@ pipeline {
                 bat '''
                     git config --global --add safe.directory "%WORKSPACE%"
                     flutter --version
+                    where git
                 '''
             }
         }
