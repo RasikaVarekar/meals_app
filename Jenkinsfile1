@@ -2,40 +2,29 @@ pipeline {
     agent any
 
     environment {
-        // Use forward slashes for Windows compatibility
         FLUTTER_HOME = 'C:/flutter_windows_3.24.4-stable/flutter'
-        ANDROID_SDK_ROOT = 'C:/Users/Admin/AppData/Local/Android/Sdk'
         JAVA_HOME = 'C:/Program Files/Java/jdk-17'
-        
-        // Explicit Git configuration
-        GIT_EXEC = 'C:/Program Files/Git/cmd/git.exe'
-        PATH = "${GIT_EXEC};${env.PATH}"
+        ANDROID_SDK_ROOT = 'C:/Users/Admin/AppData/Local/Android/Sdk'
+
+        PATH = "${FLUTTER_HOME}/bin;${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin;${ANDROID_SDK_ROOT}/platform-tools;${JAVA_HOME}/bin;${env.PATH}"
     }
 
     stages {
-        stage('Force Git Path') {
+        stage('Checkout') {
             steps {
-                bat '''
-                    # Directly set Git path first
-                    set PATH=C:/Program Files/Git/cmd;C:/Program Files/Git/bin;%PATH%
-                    
-                    # Verify Git is accessible
-                    where git
-                    git --version
-                    
-                    # Configure Flutter to use specific Git executable
-                    flutter config --git-dir="C:/Program Files/Git/cmd/git.exe"
-                '''
+                git url: 'https://github.com/RasikaVarekar/meals_app.git', branch: 'main'
             }
         }
 
         stage('Flutter Version') {
             steps {
                 bat '''
+                    git config --global --add safe.directory "%WORKSPACE%"
                     flutter --version
                 '''
             }
         }
+
         stage('Flutter Doctor') {
             steps {
                 bat 'flutter doctor -v'
@@ -48,46 +37,34 @@ pipeline {
             }
         }
 
-        stage('Flutter Clean') {
+        stage('Install Dependencies') {
             steps {
-                bat 'flutter clean'
-            }
-        }
-
-        stage('Flutter Pub Get') {
-            steps {
-                bat '''
-                    echo ✅ Running flutter pub get...
-                    flutter pub get || (echo ❌ flutter pub get failed! && exit 1)
-                '''
+                bat 'flutter pub get'
             }
         }
 
         stage('Analyze Code') {
             steps {
-                bat '''
-                    echo ✅ Analyzing code...
-                    flutter analyze || (echo ❌ flutter analyze failed! && exit 1)
-                '''
+                bat 'flutter analyze'
             }
         }
 
         stage('Run Tests') {
             steps {
-                bat '''
-                    echo ✅ Running tests...
-                    flutter test || (echo ❌ flutter test failed! && exit 1)
-                '''
+                bat 'flutter test'
             }
         }
     }
 
     post {
-        failure {
-            echo '❌ Flutter build pipeline failed!'
+        always {
+            echo '📦 Pipeline execution complete.'
         }
         success {
             echo '✅ Flutter build pipeline completed successfully!'
+        }
+        failure {
+            echo '❌ Flutter build pipeline failed!'
         }
     }
 }
