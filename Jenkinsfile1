@@ -2,31 +2,29 @@ pipeline {
     agent any
 
     environment {
-        // Use forward slashes for consistency
+        // Use forward slashes for Windows compatibility
         FLUTTER_HOME = 'C:/flutter_windows_3.24.4-stable/flutter'
         ANDROID_SDK_ROOT = 'C:/Users/Admin/AppData/Local/Android/Sdk'
         JAVA_HOME = 'C:/Program Files/Java/jdk-17'
         
-        // Explicit Git paths
-        GIT_EXEC_PATH = 'C:/Program Files/Git/cmd'  // Windows typically uses cmd\git.exe
-        GIT_HOME = 'C:/Program Files/Git'
-        
-        // PATH construction - note the order matters
-        PATH = "${GIT_HOME}/cmd;${GIT_HOME}/bin;${FLUTTER_HOME}/bin;${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin;${ANDROID_SDK_ROOT}/platform-tools;${JAVA_HOME}/bin;${env.PATH}"
-    }
-
-    options {
-        timeout(time: 20, unit: 'MINUTES')
+        // Explicit Git configuration
+        GIT_EXEC = 'C:/Program Files/Git/cmd/git.exe'
+        PATH = "${GIT_EXEC};${env.PATH}"
     }
 
     stages {
-        stage('Verify Environment') {
+        stage('Force Git Path') {
             steps {
                 bat '''
-                    echo %PATH%
+                    # Directly set Git path first
+                    set PATH=C:\Program Files\Git\cmd;C:\Program Files\Git\bin;%PATH%
+                    
+                    # Verify Git is accessible
                     where git
-                    where flutter
-                    set
+                    git --version
+                    
+                    # Configure Flutter to use specific Git executable
+                    flutter config --git-dir="C:\Program Files\Git\cmd\git.exe"
                 '''
             }
         }
@@ -34,22 +32,10 @@ pipeline {
         stage('Flutter Version') {
             steps {
                 bat '''
-                    # Explicitly set Git path first
-                    set PATH=C:/Program Files/Git/cmd;C:/Program Files/Git/bin;%PATH%
-                    
-                    # Verify Git is accessible
-                    git --version
-                    
-                    # Now try Flutter
-                    flutter --version
-                    
-                    # Alternative: Set Flutter's Git path directly
-                    flutter config --git-dir="C:/Program Files/Git/cmd/git.exe"
                     flutter --version
                 '''
             }
         }
-
         stage('Flutter Doctor') {
             steps {
                 bat 'flutter doctor -v'
