@@ -18,10 +18,8 @@ pipeline {
 
         stage('Flutter Version') {
             steps {
-                bat '''
-                    git config --global --add safe.directory "%WORKSPACE%"
-                    flutter --version
-                '''
+               bat 'git config --global --add safe.directory "%WORKSPACE%"'
+               bat 'flutter --version'
             }
         }
 
